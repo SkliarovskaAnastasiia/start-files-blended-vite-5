@@ -1,15 +1,17 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { lazy, useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchModule } from 'vite';
 import { setBaseCurrency } from './redux/currency/currencySlice';
+import { fetchCurrency } from './redux/currency/operations';
 import Header from './components/Header/Header';
+import Loader from './components/Loader/Loader';
 
 const Home = lazy(() => import('./pages/Home'));
 const Rates = lazy(() => import('./pages/Rates'));
 
 export const App = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     const options = {
       enableHighAccuracy: true,
@@ -17,8 +19,8 @@ export const App = () => {
       maximumAge: 0,
     };
 
-    const success = coords => {
-      dispatch(fetchModule(coords));
+    const success = ({ coords }) => {
+      dispatch(fetchCurrency(coords));
     };
 
     const error = () => {
@@ -32,11 +34,13 @@ export const App = () => {
     <>
       <Header />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/rates" element={<Rates />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rates" element={<Rates />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </>
   );
 };
