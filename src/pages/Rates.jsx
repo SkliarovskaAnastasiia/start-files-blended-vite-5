@@ -13,6 +13,7 @@ import Container from '../components/Container/Container';
 import Heading from '../components/Heading/Heading';
 import Loader from '../components/Loader/Loader';
 import RatesList from '../components/RatesList/RatesList';
+import Filter from '../components/Filter/Filter';
 
 const Rates = () => {
   const baseCurrency = useSelector(selectBaseCurrency);
@@ -42,6 +43,8 @@ const Rates = () => {
         />
 
         {isLoading && <Loader />}
+
+        {filteredRates.length > 0 && <Filter />}
 
         {filteredRates.length > 0 && <RatesList rates={filteredRates} />}
 

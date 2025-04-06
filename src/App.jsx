@@ -1,16 +1,18 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setBaseCurrency } from './redux/currency/currencySlice';
 import { fetchCurrency } from './redux/currency/operations';
 import Header from './components/Header/Header';
 import Loader from './components/Loader/Loader';
+import { selectBaseCurrency } from './redux/currency/selectors';
 
 const Home = lazy(() => import('./pages/Home'));
 const Rates = lazy(() => import('./pages/Rates'));
 
 export const App = () => {
   const dispatch = useDispatch();
+  const baseCurrency = useSelector(selectBaseCurrency);
 
   useEffect(() => {
     const options = {
@@ -27,8 +29,10 @@ export const App = () => {
       dispatch(setBaseCurrency('USD'));
     };
 
-    navigator.geolocation.getCurrentPosition(success, error, options);
-  }, [dispatch]);
+    if (baseCurrency === '') {
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    }
+  }, [dispatch, baseCurrency]);
 
   return (
     <>
